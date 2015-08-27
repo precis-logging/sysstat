@@ -8,17 +8,24 @@ var getLatestStatus = function(req, reply){
   var handler = this.handler;
   if(req.params.hostname){
     var bucket = handler.buckets[req.params.hostname] || [];
-    var pkt = bucket.length?bucket[bucket.length-1]:null;
-    if(pkt){
-      pkt = defaults(pkt, {_id: pkt.hostname});
+    if(!bucket.length){
+      return reply(false);
     }
-    return reply(pkt)
+    var instances = bucket.reduce((info, host)=>{
+      var instance = info[host.pid] || (info[host.pid] = host);
+      if((new Date(instance.time).getTime()) > (new Date(info[host.pid].time).getTime())){
+        info[host.pid] = host;
+      }
+      return info;
+    }, {});
+
+    return reply(Object.keys(instances).map((key)=>instances[key]));
   }
   return reply(Object.keys(handler.buckets).map(function(name){
     var bucket = handler.buckets[name];
     var pkt = bucket.length?bucket[bucket.length-1]:null;
     if(pkt){
-      pkt = defaults(pkt, {_id: pkt.hostname});
+      pkt = defaults(pkt, {_id: pkt.hostname+'@'+pkt.pid});
     }
     return pkt;
   }));

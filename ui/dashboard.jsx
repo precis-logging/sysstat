@@ -6,7 +6,9 @@ var SystemStatusSection = React.createClass({
         <InjectedComponentSet
           tagName="div"
           containerRequired={false}
-          matching={{role: 'systemstatus-section'}} />
+          matching={{role: 'systemstatus-section'}}
+          exposedProps={{mini: true}}
+          />
       </div>
     );
   }

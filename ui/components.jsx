@@ -18,6 +18,51 @@ var SystemStatusBlockHeader = React.createClass({
   }
 });
 
+var SystemStatusMini = React.createClass({
+  getInitialState(){
+    var system = this.props.system;
+    return {
+      showText: false,
+    };
+  },
+  showText(){
+    if(this.props.onClick){
+      var header = this.props.header || {
+        collapsed: '$.hostname',
+      };
+      var f = Lambda(header.collapsed);
+      var headerText = f(this.props.system);
+      return this.props.onClick(headerText);
+    }
+  },
+  render(){
+    var system = this.props.system;
+    var stats = this.props.stats;
+    var headerStyle = {cursor: 'pointer', backgroundColor: 'green', color: 'white', marginTop: '5px'};
+    if(system.cpu && system.cpu > 8.0){
+      headerStyle.backgroundColor = 'yellow';
+      headerStyle.color = 'black';
+    }
+    if(system.cpu && system.cpu > 10.0){
+      headerStyle.backgroundColor = 'red';
+      headerStyle.color = 'white';
+    }
+    var outerClassName = 'col-xl-1 col-lg-1 col-md-1 col-sm-6 col-xs-6';
+    var headerText = (Math.round(system.cpu*100)/100)+'%';
+    if(this.state.showText){
+      outerClassName = 'col-xl-4 col-lg-4 col-md-4 col-sm-12 col-xs-12';
+      headerText = this.state.headerText;
+    }
+    return(
+      <div>
+        <div className={outerClassName}>
+          <div onClick={this.showText} onTouchStart={this.showText} style={headerStyle}>{headerText} &nbsp;</div>
+        </div>
+      </div>
+    );
+  }
+});
+
 var SystemStatusBlock = React.createClass({
   getInitialState(){
     var collapsable = typeof(this.props.collapsable)==='undefined'?true:this.props.collapsable;
@@ -60,6 +105,14 @@ var SystemStatusBlock = React.createClass({
     var innerStyle = {
       display: collapsed?'none':''
     };
+    if(system.cpu && system.cpu > 8.0){
+      headerStyle.backgroundColor = 'yellow';
+      headerStyle.color = 'black';
+    }
+    if(system.cpu && system.cpu > 10.0){
+      headerStyle.backgroundColor = 'red';
+      headerStyle.color = 'white';
+    }
     var outerClassName = !collapsable?'bs-callout':'';
     outerClassName += ' col-xl-2 col-lg-3 col-md-4 col-sm-12 col-xs-12';
     return(
@@ -78,6 +131,7 @@ var SystemStatusBlock = React.createClass({
 var SystemStatus = React.createClass({
   getInitialState(){
     return {
+      hoverText: 'Select to view',
       systems: [],
       stats: {
       },
@@ -112,10 +166,38 @@ var SystemStatus = React.createClass({
   componentWillUnmount(){
     this.unlisten&&this.unlisten();
   },
+  showText(text){
+    if(this.state.tmr){
+      clearTimeout(this.state.tmr);
+    }
+    this.setState({
+      hoverText: text,
+      tmr: setTimeout(()=>this.hoverLeave(), 5000)
+    });
+  },
+  hoverLeave(){
+    this.setState({
+      hoverText: 'Select to view',
+      tmr: false,
+    });
+  },
   render(){
     var collapsed = typeof(this.props.collapsed)==='undefined'?true:this.props.collapsed;
     var collapsable = typeof(this.props.collapsable)==='undefined'?true:this.props.collapsable;
+    var mini = !!this.props.mini;
+    var hoverText = this.state.hoverText;
     var status = this.state.systems.map((system)=>{
+      if(mini){
+        return <SystemStatusMini
+                system={system}
+                stats={this.state.stats}
+                header={this.state.header}
+                key={system._id}
+                collapsed={collapsed}
+                collapsable={collapsable}
+                onClick={this.showText}
+                />;
+      }
       return <SystemStatusBlock
               system={system}
               stats={this.state.stats}
@@ -127,6 +209,7 @@ var SystemStatus = React.createClass({
     });
     return(
       <div className="row">
+        <div className="">{hoverText}</div>
         {status}
       </div>
     );
