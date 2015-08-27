@@ -106,10 +106,11 @@ var registerUi = function(){
 };
 
 var Plugin = function(options){
+};
+
+Plugin.prototype.init = function(options){
   var logger = options.logger;
   var config = this.config = defaults({display: {}}, options);
-  var server = options.server;
-  var ui = options.ui;
   var sockets = this.sockets = options.sockets;
 
   this.handler = new Handler(defaults({
@@ -117,9 +118,14 @@ var Plugin = function(options){
     sockets: sockets,
     event: 'sysstats::update',
   }, config));
+};
 
-  server.route(routes.call(this));
-  ui.register(registerUi.call(this));
+Plugin.prototype.register = function(options){
+  var register = options.register;
+  register({
+    ui: registerUi.call(this),
+    server: routes.call(this)
+  });
 };
 
 Plugin.prototype.push = function(record){
