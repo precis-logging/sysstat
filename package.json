@@ -1,6 +1,6 @@
 {
   "name": "precis-sysstat",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "System Status message monitor and UI for Precis",
   "main": "index.js",
   "scripts": {
