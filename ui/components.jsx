@@ -260,6 +260,45 @@ NEW:
       }
       return system;
     });
+    var groups = systems.reduce((groups, system)=>{
+      var version = system.appVersion;
+      var env = system.envConfig;
+      var key = version+' '+env;
+      var group = groups[key] || (groups[key] = []);
+      group.push(system);
+      return groups;
+    }, {});
+    var status = Object.keys(groups).map((groupName)=>{
+      var systems = groups[groupName];
+      var status = systems.map((system)=>{
+        if(mini){
+          return <SystemStatusMini
+                  system={system}
+                  stats={this.state.stats}
+                  header={this.state.header}
+                  key={system._id}
+                  collapsed={collapsed}
+                  collapsable={collapsable}
+                  onClick={this.showText}
+                  />;
+        }
+        return <SystemStatusBlock
+                system={system}
+                stats={this.state.stats}
+                header={this.state.header}
+                key={system._id}
+                collapsed={collapsed}
+                collapsable={collapsable}
+                />;
+      });
+      return (
+        <div key={groupName} className="row">
+          <h3>{groupName}</h3>
+          {status}
+        </div>
+      );
+    });
+    /*
     var status = systems.map((system)=>{
       if(mini){
         return <SystemStatusMini
@@ -281,6 +320,7 @@ NEW:
               collapsable={collapsable}
               />;
     });
+    //*/
     return(
       <div className="row">
         <div className="">{hoverText}</div>
