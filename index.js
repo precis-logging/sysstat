@@ -25,7 +25,7 @@ var getLatestStatus = function(req, reply){
     var bucket = handler.buckets[name];
     var pkt = bucket.length?bucket[bucket.length-1]:null;
     if(pkt){
-      pkt = defaults(pkt, {_id: pkt.hostname+'@'+pkt.pid});
+      pkt = defaults(pkt, {_id: (pkt.hostname||pkt.host)+'@'+pkt.pid});
     }
     return pkt;
   }));

@@ -298,29 +298,7 @@ NEW:
         </div>
       );
     });
-    /*
-    var status = systems.map((system)=>{
-      if(mini){
-        return <SystemStatusMini
-                system={system}
-                stats={this.state.stats}
-                header={this.state.header}
-                key={system._id}
-                collapsed={collapsed}
-                collapsable={collapsable}
-                onClick={this.showText}
-                />;
-      }
-      return <SystemStatusBlock
-              system={system}
-              stats={this.state.stats}
-              header={this.state.header}
-              key={system._id}
-              collapsed={collapsed}
-              collapsable={collapsable}
-              />;
-    });
-    //*/
+
     return(
       <div className="row">
         <div className="">{hoverText}</div>
