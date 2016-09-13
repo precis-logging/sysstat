@@ -115,6 +115,7 @@ var SystemStatusBlock = React.createClass({
     }
     var outerClassName = !collapsable?'bs-callout':'';
     outerClassName += ' col-xl-2 col-lg-3 col-md-4 col-sm-12 col-xs-12';
+
     return(
       <div>
         <div className={outerClassName}>
@@ -255,6 +256,7 @@ NEW:
           "cpu" : system.data[1].cpu,
           "msg" : "Server Status",
           "time" : new Date(Date.parse(system.dateTime)),
+          "status": system.status,
           "v" : 1
         };
       }
@@ -298,7 +300,6 @@ NEW:
         </div>
       );
     });
-
     return(
       <div className="row">
         <div className="">{hoverText}</div>
